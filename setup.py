@@ -64,11 +64,11 @@ setup(
 
         ],
     },
-    # entry_points={
-    #     'console_scripts': [
-    #         'pythie-core = crawlertv.rpc.server:main'
-    #     ]
-    # },
+    entry_points={
+        'console_scripts': [
+            'wstool_wrapper = wstool_wrapper.wstool_wrapper:main'
+        ]
+    },
     # cmdclass={
     #     'build_py': BuildPyCommand,
     #     'build_proto_modules': BuildPackageProtos,

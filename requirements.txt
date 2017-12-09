@@ -1,2 +1,1 @@
-wstool
-colorlog
+git+git://github.com/yoyonel/wstool_wrapper#egg=wstool_wrapper
