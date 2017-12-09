@@ -29,7 +29,7 @@ setup(
     # https://stackoverflow.com/questions/24291695/cannot-include-non-python-files-with-setup-py
     include_package_data=True,
     package_data={
-        'wstool-wrappers': [
+        'wstool_wrappers': [
             'data/Pipfile',
             'data/Pipfile.lock'
         ]
