@@ -1,0 +1,38 @@
+{
+	"default_branch": "master",
+
+	"repos": [
+		{
+			"repository": "git@github.com:Holimetrix/crawler-proto.git",
+			"branch": "feature_monitoring"
+		},
+		{
+			"repository": "git@github.com:Holimetrix/crawler-core.git"
+		},
+		{
+			"repository": "git@github.com:Holimetrix/crawler-storage.git",
+			"branch": "feature_monitoring"
+		},
+		{
+			"repository": "git@github.com:Holimetrix/crawler-infra.git",
+			"branch": "design_pattern-producer_consumer"
+		},
+		{
+			"repository": "git@github.com:Holimetrix/crawler-infra-docker-compose.git",
+			"branch": "feature_remove-stream-provider"
+		},
+		{
+			"repository": "git@github.com:Holimetrix/crawler-web-stream.git"
+		},
+		{
+			"repository": "git@github.com:Holimetrix/crawler-admin.git"
+		},
+		{
+			"repository": "git@github.com:Holimetrix/crawler-matching.git"
+		},
+		{
+			"repository": "git@github.com:Holimetrix/crawler-stream.git",
+			"branch": "refactoring"
+		}
+	]
+}
