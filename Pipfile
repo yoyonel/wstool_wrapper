@@ -6,25 +6,13 @@ url = "https://pypi.python.org/simple"
 
 [[source]]
 
-name = "hmx"
-verify_ssl = true
-url = "https://tart.d-bi.fr/simple"
-
-[[source]]
-
 name = "internal"
 verify_ssl = true
 url = "http://localhost:8080/simple"
 
-
 [packages]
-
-# holimetrix-crawler-storage = { git = 'git@github.com:Holimetrix/crawler-storage.git', editable = 'true' }
-# holimetrix-crawler-storage = "*"
 
 [dev-packages]
 
-# grpcio-tools = "*"
-# sk-video = "*"
 pytest = "*"
 tox = "*"

@@ -2,15 +2,8 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-# import sys
-# from distutils.command.build_py import build_py as _build_py
-# from distutils.command.sdist import sdist as _sdist
-
-# import setuptools
 from setuptools import find_packages
 from setuptools import setup
-# from setuptools.command.develop import develop as _develop
-
 
 # https://docs.python.org/3/distutils/setupscript.html
 setup(
@@ -69,10 +62,4 @@ setup(
             'wstool_wrapper = wstool_wrapper.wstool_wrapper:main'
         ]
     },
-    # cmdclass={
-    #     'build_py': BuildPyCommand,
-    #     'build_proto_modules': BuildPackageProtos,
-    #     'develop': DevelopCommand,
-    #     'sdist': SDistCommand
-    # }
 )
