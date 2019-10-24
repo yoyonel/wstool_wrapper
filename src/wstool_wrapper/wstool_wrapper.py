@@ -2,16 +2,17 @@
 # -*- coding: utf-8 -*-
 import argparse
 import json
-import os
 import logging
+import os
 import subprocess
+
 #
 from colorlog import ColoredFormatter
 
 __author__ = 'atty_l'
 
 # ---- LOG -----
-LOGFORMAT = '%(log_color)s[%(asctime)s][%(levelname)s][%(filename)s][%(funcName)s] %(message)s'
+LOGFORMAT = "%(log_color)s[%(asctime)s][%(levelname)s][%(filename)s][%(funcName)s] %(message)s"
 # logging.basicConfig(format=LOGFORMAT, level=logging.INFO)
 # logger = logging.getLogger(__name__)
 # --- Colors ---
@@ -23,7 +24,7 @@ LOG_LEVEL = logging.DEBUG
 stream = logging.StreamHandler()
 stream.setLevel(LOG_LEVEL)
 stream.setFormatter(formatter)
-logger = logging.getLogger('pythonConfig')
+logger = logging.getLogger("pythonConfig")
 logger.setLevel(LOG_LEVEL)
 logger.addHandler(stream)
 
@@ -86,12 +87,11 @@ def subprocess_cmd(cmd, **kwargs):
     try:
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, **kwargs)
     except OSError as e:
-        logger.error("OSError when invokating subprocess: {}".format(cmd))
-        logger.error("Exception: {}".format(e))
+        logger.error("OSError when invoking subprocess: %s", cmd, exc_info=True)
         raise e
-    else:
-        ret_comm = p.communicate()
-        return ret_comm, p
+
+    ret_comm = p.communicate()
+    return ret_comm, p
 
 
 def wstool_init_ws(directory):
@@ -103,17 +103,18 @@ def wstool_init_ws(directory):
     try:
         ret_comm, p = subprocess_cmd(["wstool", "init", directory])
     except OSError:
-        logger.error("Erreur à l'init du workspace !")
-    else:
-        logger.debug("comm: {} - p.returncode: {}".format(ret_comm, p.returncode))
+        logger.error("Can't init workspace!", exc_info=True)
+        raise RuntimeError
+
+    logger.debug("comm: %s - p.returncode: %s", ret_comm, p.returncode)
 
 
 def wstool_clone_repos(
-    params,
-    target_workspace='.',
-    update_after_set=False,
-    update_submodules=False,
-    print_stdout=True
+        params,
+        target_workspace=".",
+        update_after_set=False,
+        update_submodules=False,
+        print_stdout=True
 ):
     """
 
@@ -121,10 +122,11 @@ def wstool_clone_repos(
     :param target_workspace:
     :param update_after_set:
     :param update_submodules:
+    :param print_stdout:
     :return:
     """
     for param in params:
-        logger.info("Perform wstool operations for: {URI} ...".format(URI=param['uri']))
+        logger.info("Perform wstool operations for: %s ...", param['uri'])
         cmd = ["wstool",
                "set",
                param['uri'],
@@ -136,22 +138,22 @@ def wstool_clone_repos(
                ]
         if update_after_set:
             cmd.append("--update")
-        logger.debug("cmd: {}".format(cmd))
+        logger.debug("cmd: %s", cmd)
         try:
             comm, p = subprocess_cmd(cmd)
             stdout, err = comm
             if print_stdout:
                 # https://stackoverflow.com/questions/606191/convert-bytes-to-a-string
                 print(stdout.decode('utf-8'))
-        except OSError as e:
-            logger.error("Perform wstool operation for: {URI} ... FAILED".format(URI=param['uri']))
-            logger.error("Exception: {}".format(repr(e)))
-        else:
-            logger.info("Perform wstool operation for: {URI} ... DONE".format(URI=param['uri']))
-            #
-            logger.debug("stdout:{}".format(stdout))
-            logger.debug("err: {}".format(err))
-            logger.debug("exit code: {}".format(p.returncode))
+        except OSError:
+            logger.error("Perform wstool operation for: %s ... FAILED", param['uri'], exc_info=True)
+            raise RuntimeError
+
+        logger.info("Perform wstool operation for: %s ... DONE", param['uri'])
+        #
+        logger.debug("stdout: %s", stdout)
+        logger.debug("err: %s", err)
+        logger.debug("exit code: %s", p.returncode)
 
     if update_submodules:
         str_wstool_operation = "Perform wstool update on all submodules ..."
@@ -162,16 +164,16 @@ def wstool_clone_repos(
             comm, p = subprocess_cmd(cmd, cwd=target_workspace)
             stdout, err = comm
             if print_stdout:
-                print(stdout.decode('utf-8'))
-        except OSError as e:
-            logger.info(str_wstool_operation + "FAILED")
-            logger.error("Exception: {}".format(repr(e)))
-        else:
-            logger.info(str_wstool_operation + "DONE")
-            #
-            logger.debug("stdout:{}".format(stdout))
-            logger.debug("err: {}".format(err))
-            logger.debug("exit code: {}".format(p.returncode))
+                print(stdout.decode("utf-8"))
+        except OSError:
+            logger.info(str_wstool_operation + "FAILED", exc_info=True)
+            raise RuntimeError
+
+        logger.info(str_wstool_operation + "DONE")
+        #
+        logger.debug("stdout: %s", stdout)
+        logger.debug("err: %s", err)
+        logger.debug("exit code: %s", p.returncode)
 
 
 def process(args):
@@ -181,24 +183,19 @@ def process(args):
     :type args: ArgumentParser
     :return:
     """
-    # Load JSON datas
-    try:
-        json_repos = load_json_file(args.json_file)
-    except Exception as e:
-        logger.error(e)
-    else:
-        logger.debug("json_repos: {}".format(json_repos))
-        # Initialisation du WorkSpace
-        wstool_init_ws(args.directory)
-        # On récupère les paramètres (wstool) des dépots issus du JSON
-        wstool_params = wstool_parameters_from_json_repos(json_repos)
-        # Récupération des dépots (clones initiaux)
-        wstool_clone_repos(
-            wstool_params,
-            target_workspace=args.directory,
-            update_after_set=args.update,
-            update_submodules=args.update_submodules
-        )
+    # TODO: Handle exceptions/errors
+    json_repos = load_json_file(args.json_file)
+    logger.debug("json_repos: %s", json_repos)
+    wstool_params = wstool_parameters_from_json_repos(json_repos)
+
+    wstool_init_ws(args.directory)
+
+    wstool_clone_repos(
+        wstool_params,
+        target_workspace=args.directory,
+        update_after_set=args.update,
+        update_submodules=args.update_submodules
+    )
 
 
 def parse_arguments():
@@ -209,16 +206,17 @@ def parse_arguments():
     # Parse arguments
     parser = argparse.ArgumentParser()
     # url: https://docs.python.org/3/library/argparse.html#argparse.FileType
-    parser.add_argument('json_file', type=argparse.FileType('r'))
-    parser.add_argument('directory', type=str, default=os.path.expanduser('.'))
-    parser.add_argument('--update_after_set', dest='update', action='store_true',
-                        help='Update after set entry')
-    parser.add_argument('--update_submodules', dest='update_submodules', action='store_true',
-                        help='Update (all) submodules of the project.')
-    parser.add_argument("-v", "--verbose", action="store_true",
+    parser.add_argument("json_file", type=argparse.FileType("r"))
+    parser.add_argument("directory", type=str, default=os.path.expanduser("."))
+    parser.add_argument("--update_after_set", dest="update",
+                        action="store_true",
+                        help="Update after set entry")
+    parser.add_argument("--update_submodules", dest="update_submodules",
+                        action="store_true",
+                        help="Update (all) submodules of the project.")
+    parser.add_argument("-v", "--verbose",
+                        action="store_true",
                         help="increase output verbosity")
-    parser.set_defaults(update=False)
-    parser.set_defaults(verbose=False)
 
     args = parser.parse_args()
 
@@ -235,7 +233,7 @@ def main():
 
     # debug for argparser
     for arg, value in sorted(vars(args).items()):
-        logger.debug("Argument {}: {}".format(arg, value))
+        logger.debug("Argument %s: %s", arg, value)
 
     process(args)
 
