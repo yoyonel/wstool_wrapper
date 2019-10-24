@@ -51,6 +51,7 @@ setup(
         "wstool",
         "colorlog",
     ],
+    setup_requires=["setuptools_scm", "twine"],
     entry_points={
         'console_scripts': [
             'wstool_wrapper = wstool_wrapper.wstool_wrapper:main'
